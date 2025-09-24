@@ -44,8 +44,6 @@ yarn test
 yarn build
 yarn start
 
-Note: The app uses the App Router. Favicon: use src/app/icon.png (512×512) or add a <link rel="icon" …> in src/app/head.tsx.
-
 3. Tech & Dependencies
 
 Next.js 14+ (App Router) — project structure, routing (/, /backlog, /task/[id])
@@ -62,7 +60,7 @@ Vitest + Testing Library — unit & component tests
 
 Fonts:
 
-Schibsted Grotesk (body), PP Editorial New Serif (headings), Geist Mono (code)
+Schibsted Grotesk (body), PP Editorial New Serif (headings)
 
 4. Project Structure
    /
