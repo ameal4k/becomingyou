@@ -72,7 +72,7 @@ export default function Navbar() {
               <NavLinks />
               <a
                 className="inline-flex items-center gap-2 rounded-xl border  border-black/10 px-3 py-2 text-sm text-gray hover:bg-black/5"
-                href="https://github.com/your/repo" // ← replace when ready
+                href="https://github.com/ameal4k/becomingyou" 
                 target="_blank"
                 rel="noreferrer"
               >
@@ -89,7 +89,7 @@ export default function Navbar() {
                 <NavLinks onClick={() => setOpen(false)} />
                 <a
                   className="mt-4 inline-flex items-center gap-2 rounded-xl border  border-black/10 px-3 py-2 text-sm text-gray hover:bg-black/5"
-                  href="https://github.com/your/repo" // ← replace when ready
+                  href="https://github.com/ameal4k/becomingyou" 
                   target="_blank"
                   rel="noreferrer"
                 >
