@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Filters from "@/components/Filters";
 import { useBoard } from "lib/store";
-import { statusToCssVar } from "lib/ui";
+import { statusToCssVar, type CSSVarStyle } from "lib/ui";
 
 type FiltersState = { q: string; tag: string; assignee: string; status: "" | "scheduled" | "in-progress" | "done" };
 
@@ -68,8 +68,8 @@ export default function BacklogPage() {
             <li key={t.id} className="relative p-4 pr-28 hover:bg-black/5">
               {/* badge in top-right */}
               <span
-                className="absolute right-4 top-4 text-xs rounded-full border  border-black/10 px-2 py-0.5 bg-status-gradient"
-                style={{ ["--col" as any]: statusToCssVar(t.status) }}
+                className="absolute right-4 top-4 whitespace-nowrap text-xs rounded-full border  border-black/10 px-2 py-0.5 bg-status-gradient"
+                style={{ "--col": statusToCssVar(t.status) } as CSSVarStyle}
                 aria-label={`Status: ${t.status}`}
               >
                 {t.status}

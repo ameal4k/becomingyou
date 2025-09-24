@@ -1,36 +1,44 @@
+// tests/taskcard.test.tsx
 import React from "react";
 import { describe, expect, test, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import type { Task } from "lib/types";
 
 // Pretend we are on "/"
 vi.mock("next/navigation", () => ({
   usePathname: () => "/",
 }));
 
+// Minimal typed slice of the board store used by TaskCard
+type MockStore = {
+  removeTask: (id: string) => void;
+  updateTask: (id: string, patch: Partial<Task>) => void;
+};
+
 // TaskCard pulls actions from the store; we mock just what's needed
 vi.mock("lib/store", () => ({
-  useBoard: (sel: any) =>
-    sel({
-      removeTask: vi.fn(),
-      updateTask: vi.fn(),
-    }),
+  useBoard:
+    (sel: (s: MockStore) => unknown) =>
+      sel({
+        removeTask: vi.fn(),
+        updateTask: vi.fn(),
+      }),
 }));
 
 import TaskCard from "@/components/TaskCard";
 
 describe("TaskCard", () => {
   test("detail link includes ?from=/", () => {
-    render(
-      <TaskCard
-        task={{
-          id: "t1",
-          title: "Hello",
-          status: "scheduled",
-          createdAt: Date.now(),
-          updatedAt: Date.now(),
-        } as any}
-      />
-    );
+    const task: Task = {
+      id: "t1",
+      title: "Hello",
+      status: "scheduled",
+      position: 0,
+      createdAt: 1,
+      updatedAt: 1,
+    };
+
+    render(<TaskCard task={task} />);
 
     const link = screen.getByRole("link", { name: /hello/i }) as HTMLAnchorElement;
 

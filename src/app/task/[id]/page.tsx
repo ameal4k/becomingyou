@@ -7,10 +7,10 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useBoard } from "lib/store";
 import Modal from "@/components/Modal";
 import TaskForm, { type TaskInput } from "@/components/TaskForm";
-import { statusToCssVar } from "lib/ui";
+import { statusToCssVar, type CSSVarStyle } from "lib/ui";
 
 export default function TaskDetailPage() {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>(); // route id is stable
   const router = useRouter();
   const search = useSearchParams();
   const from = search.get("from"); // "/backlog" or "/"
@@ -25,7 +25,7 @@ export default function TaskDetailPage() {
   if (!task) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-12">
-        <div className="rounded-xl border  border-black/10 bg-background p-6 text-center">
+        <div className="rounded-xl border border-black/10 bg-background p-6 text-center">
           <h1 className="font-editorial text-2xl text-foreground">Task not found</h1>
           <p className="text-secondary mt-2">The task you’re looking for doesn’t exist.</p>
           <div className="mt-4 flex items-center justify-center gap-4 text-sm">
@@ -37,20 +37,21 @@ export default function TaskDetailPage() {
     );
   }
 
+  // Use the stable route id for mutations to avoid "possibly undefined"
   function handleSave(data: TaskInput) {
-    updateTask(task.id, data);
+    updateTask(id, data);
     setOpen(false);
   }
 
   function handleDelete() {
-    removeTask(task.id);
+    removeTask(id);
     if (from === "/" || from === "/backlog") router.push(from);
-    else router.push("/backlog"); // fallback
+    else router.push("/backlog");
   }
 
   function handleBack() {
     if (from === "/" || from === "/backlog") router.push(from);
-    else router.back(); // if no known source, try history; if that fails, user still has the static links below
+    else router.back();
   }
 
   return (
@@ -59,7 +60,7 @@ export default function TaskDetailPage() {
         <div>
           <button
             onClick={handleBack}
-            className="text-sm underline cursor-pointer  underline-offset-4 text-gray hover:text-foreground"
+            className="text-sm underline cursor-pointer underline-offset-4 text-gray hover:text-foreground"
           >
             ← Back
           </button>
@@ -67,26 +68,29 @@ export default function TaskDetailPage() {
           <h1 className="mt-2 font-editorial text-4xl text-foreground">{task.title}</h1>
           <div className="mt-2 text-sm text-gray">
             <div><b>Assignee:</b> {task.assignee ?? "Unassigned"}</div>
-            <div><b>Status:</b>     <span
-                            className="text-xs rounded-full border  border-black/10 px-2 py-0.5 bg-status-gradient"
-                            style={{ ["--col" as any]: statusToCssVar(task.status) }}
-                            aria-label={`Status: ${task.status}`}
-                          >
-                            {task.status}
-                          </span></div>
+            <div>
+              <b>Status:</b>{" "}
+              <span
+                className="text-xs rounded-full border whitespace-nowrap border-black/10 px-2 py-0.5 bg-status-gradient"
+                style={{ "--col": statusToCssVar(task.status) } as CSSVarStyle}
+                aria-label={`Status: ${task.status}`}
+              >
+                {task.status}
+              </span>
+            </div>
             <div><b>Tags:</b> {(task.tags ?? []).join(", ") || "none"}</div>
           </div>
         </div>
 
         <div className="shrink-0 flex items-center gap-2">
           <button
-         className="inline-flex items-center gap-2 cursor-pointer rounded-xl border-2  border-burnt bg-cream px-3 py-2 text-sm font-bold text-burnt hover:bg-cream/80"
+            className="inline-flex items-center gap-2 cursor-pointer rounded-xl border-2 border-burnt bg-cream px-3 py-2 text-sm font-bold text-burnt hover:bg-cream/80"
             onClick={() => setOpen(true)}
           >
             Edit
           </button>
           <button
-            className="rounded-xl border cursor-pointer  border-black/10 px-3 py-2 text-sm text-gray hover:bg-black/5"
+            className="rounded-xl border cursor-pointer border-black/10 px-3 py-2 text-sm text-gray hover:bg-black/5"
             onClick={handleDelete}
           >
             Delete
@@ -94,7 +98,7 @@ export default function TaskDetailPage() {
         </div>
       </div>
 
-      <section className="rounded-2xl border  border-black/10 bg-background p-4">
+      <section className="rounded-2xl border border-black/10 bg-background p-4">
         <h4 className="font-editorial text-xl text-foreground">Description</h4>
         <p className="mt-2 text-gray">
           {task.description ?? "No description."}

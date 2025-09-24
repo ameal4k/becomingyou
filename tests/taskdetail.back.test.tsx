@@ -1,6 +1,8 @@
+// tests/taskdetail.back.test.tsx
 import React from "react";
 import { describe, expect, test, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import type { Task } from "lib/types";
 
 // --- Mocks for next/navigation
 const push = vi.fn();
@@ -15,23 +17,31 @@ vi.mock("next/navigation", () => ({
   usePathname: () => "/backlog",
 }));
 
-// --- Mock store to provide a single task
+// --- Mock store to provide a single task (typed)
+type MockStore = {
+  tasks: Task[];
+  updateTask: (id: string, patch: Partial<Task>) => void;
+  removeTask: (id: string) => void;
+};
+
 vi.mock("lib/store", () => ({
-  useBoard: (sel: any) =>
-    sel({
-      tasks: [
-        {
-          id: "x1",
-          title: "A task",
-          description: "details",
-          status: "scheduled",
-          createdAt: 1,
-          updatedAt: 1,
-        },
-      ],
-      updateTask: vi.fn(),
-      removeTask: vi.fn(),
-    }),
+  useBoard:
+    (sel: (s: MockStore) => unknown) =>
+      sel({
+        tasks: [
+          {
+            id: "x1",
+            title: "A task",
+            description: "details",
+            status: "scheduled",
+            position: 0,
+            createdAt: 1,
+            updatedAt: 1,
+          } satisfies Task,
+        ],
+        updateTask: vi.fn(),
+        removeTask: vi.fn(),
+      }),
 }));
 
 // Import after mocks

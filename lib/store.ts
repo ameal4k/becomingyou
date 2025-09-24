@@ -17,7 +17,7 @@ export type BoardState = {
 
 export const useBoard = create<BoardState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       tasks: [],
 
       addTask: (t) => set((s) => ({ tasks: [...s.tasks, t] })),

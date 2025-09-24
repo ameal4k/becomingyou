@@ -1,4 +1,5 @@
 import type { Status } from "./types";
+import type React from "react";
 
 export function statusToCssVar(status: Status) {
   switch (status) {
@@ -10,3 +11,7 @@ export function statusToCssVar(status: Status) {
       return "var(--color-olive)";
   }
 }
+
+export type CSSVarStyle = React.CSSProperties & {
+  ["--col"]?: string;
+};

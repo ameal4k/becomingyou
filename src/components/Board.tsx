@@ -2,11 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  DndContext,
-  closestCenter,
-  DragEndEvent,
-} from "@dnd-kit/core";
+import { DndContext, closestCenter, DragEndEvent } from "@dnd-kit/core";
 import { useBoard } from "lib/store";
 import type { Status, Task } from "lib/types";
 import Column from "./Column";
@@ -33,6 +29,7 @@ export default function Board() {
   const moveTo = useBoard((s) => s.moveTo);
 
   const [open, setOpen] = useState(false);
+  const [deleteMode, setDeleteMode] = useState(false);
 
   function handleCreate(data: TaskInput) {
     const status: Status = data.status ?? "scheduled";
@@ -54,7 +51,16 @@ export default function Board() {
     setOpen(false);
   }
 
+  // global cursor helpers for DnD
+  const addDraggingClass = () => document.documentElement.classList.add("dragging");
+  const removeDraggingClass = () => document.documentElement.classList.remove("dragging");
+
   function handleDragEnd(e: DragEndEvent) {
+    removeDraggingClass();
+
+    // if we're in delete mode, ignore drag logic (no reorders while deleting)
+    if (deleteMode) return;
+
     const { active, over } = e;
     if (!over) return;
 
@@ -88,22 +94,46 @@ export default function Board() {
   return (
     <>
       {/* Top bar actions */}
-      <h1>Emil's Kanban Board</h1>
-      <p>A lightweight kanban board for planning and tracking work. Drag tasks between Scheduled, In-Progress, and Done (drag-sort within columns as well), quickly create or edit details, and open a focused task view when you need it. Filter and sort by text, tags, or assignee—and everything saves locally in your browser, no account required.</p>
-      <div className="mb-4 flex items-center justify-end">
+      <h1>Emil&apos;s Kanban Board</h1>
+      <p>
+        A lightweight kanban board for planning and tracking work. Drag tasks between Scheduled, In-Progress, and Done
+        (drag-sort within columns as well), quickly create or edit details, and open a focused task view when you need
+        it. Filter and sort by text, tags, or assignee—and everything saves locally in your browser, no account required.
+      </p>
+
+      <div className="mb-4 flex items-center justify-end gap-2">
         <button
-          className="inline-flex items-center gap-2 cursor-pointer rounded-xl border-2  border-burnt bg-cream px-3 py-2 text-sm font-bold text-burnt hover:bg-cream/80"
+          className="inline-flex items-center gap-2 cursor-pointer rounded-xl border-2 border-burnt bg-cream px-3 py-2 text-sm font-bold text-burnt hover:bg-cream/80"
           onClick={() => setOpen(true)}
         >
           Add Task
         </button>
+
+        <button
+          className={[
+            "inline-flex items-center gap-2 cursor-pointer rounded-xl border-2 px-3 py-2 text-sm",
+            deleteMode
+              ? "border-burnt bg-burnt text-cream"
+              : "border-foreground/20 bg-background text-gray hover:bg-black/5",
+          ].join(" ")}
+          aria-pressed={deleteMode}
+          onClick={() => setDeleteMode((v) => !v)}
+          title={deleteMode ? "Finish deletion" : "Delete tasks"}
+        >
+          {deleteMode ? "Deletion finished" : "Delete tasks"}
+        </button>
       </div>
 
-      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext
+        collisionDetection={closestCenter}
+        onDragStart={addDraggingClass}
+        onDragEnd={handleDragEnd}
+        onDragCancel={removeDraggingClass}
+      >
         <section className="relative isolate grid gap-4 md:grid-cols-3">
-          <Column status="scheduled" />
-          <Column status="in-progress" />
-          <Column status="done" />
+          <Column status="scheduled" deleteMode={deleteMode} />
+          <Column status="in-progress" deleteMode={deleteMode} />
+          <Column status="done" deleteMode={deleteMode} />
         </section>
       </DndContext>
 
