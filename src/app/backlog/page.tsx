@@ -77,7 +77,7 @@ export default function BacklogPage() {
 
               <Link
                 href={{ pathname: `/task/${t.id}`, query: { from: pathname } }}
-                className="font-editorial text-foreground hover:underline underline-offset-4"
+                className="font-editorial text-foreground capitalize hover:underline underline-offset-4"
               >
                 {t.title}
               </Link>

@@ -65,7 +65,7 @@ export default function TaskDetailPage() {
             ← Back
           </button>
 
-          <h1 className="mt-2 font-editorial text-4xl text-foreground">{task.title}</h1>
+          <h1 className="mt-2 font-editorial text-4xl capitalize text-foreground">{task.title}</h1>
           <div className="mt-2 text-sm text-gray">
             <div><b>Assignee:</b> {task.assignee ?? "Unassigned"}</div>
             <div>
